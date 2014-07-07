@@ -2,7 +2,7 @@
 
 namespace Oro\Bundle\NoteBundle\Entity\Manager;
 
-use Doctrine\ORM\EntityManager as OrmEntityManager;
+use Doctrine\ORM\EntityManager;
 
 use Oro\Bundle\AttachmentBundle\Manager\AttachmentManager;
 use Oro\Bundle\LocaleBundle\Formatter\NameFormatter;
@@ -12,9 +12,9 @@ use Oro\Bundle\SecurityBundle\ORM\Walker\AclHelper;
 use Oro\Bundle\SecurityBundle\SecurityFacade;
 use Oro\Bundle\UserBundle\Entity\User;
 
-class EntityManager
+class NoteManager
 {
-    /** @var OrmEntityManager */
+    /** @var EntityManager */
     protected $em;
 
     /** @var SecurityFacade */
@@ -30,14 +30,14 @@ class EntityManager
     protected $attachmentManager;
 
     /**
-     * @param OrmEntityManager  $em
+     * @param EntityManager     $em
      * @param SecurityFacade    $securityFacade
      * @param AclHelper         $aclHelper
      * @param NameFormatter     $nameFormatter
      * @param AttachmentManager $attachmentManager
      */
     public function __construct(
-        OrmEntityManager $em,
+        EntityManager $em,
         SecurityFacade $securityFacade,
         AclHelper $aclHelper,
         NameFormatter $nameFormatter,
@@ -113,8 +113,9 @@ class EntityManager
             $result[$attrName]               = $this->nameFormatter->format($user);
             $result[$attrName . '_id']       = $user->getId();
             $result[$attrName . '_viewable'] = $this->securityFacade->isGranted('VIEW', $user);
-            $result[$attrName . '_avatar']   = $user->getAvatar()
-                ? $this->attachmentManager->getFilteredImageUrl($user->getAvatar(), 'avatar_xsmall')
+            $avatar                          = $user->getAvatar();
+            $result[$attrName . '_avatar']   = $avatar
+                ? $this->attachmentManager->getFilteredImageUrl($avatar, 'avatar_xsmall')
                 : null;
         }
     }
